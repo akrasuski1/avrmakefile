@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+# Config variables:
+
+# The generic makefile.
+MAKEFILE=~/avr/generic/makefile
+
+echo "Hello! This script will interactively create an AVR project."
+echo ""
+read -p "Please type project name: " PROJ
+echo ""
+echo "Creating project $PROJ..."
+
+mkdir $PROJ || { echo "Quitting, since project already exists." && exit 1; }
+# At this point, we can safely abort by removing everything in the
+# $PROJ directory.
+
+function damnit {
+	echo "Aborting."
+	rm -rif $PROJ
+	exit 1
+}
+
+mkdir -p $PROJ/{inc,obj,src}
+
+cp $MAKEFILE $PROJ/makefile || damnit "Makefile not found."
+
+echo ""
+echo "Listing possible processor choices:"
+echo ""
+avr-gcc -mmcu=invalid_processor 2>&1 | head -2 | tail -1
+read -p "Please choose processor (one of above): " PROC
+echo "You chose $PROC."
+
+echo ""
+echo "Listing possible processor choices (for avrdude):"
+echo ""
+avrdude -c usbasp 2>&1 | tail -n +3
+read -p "Please choose processor (one of above): " DUDE_PROC
+echo "You chose $DUDE_PROC."
+
+echo "Creating simple blink file - hopefully it compiles."
+cat > $PROJ/src/main.c << EOF
+#include <avr/io.h>
+#include <util/delay.h>
+int main(){
+	DDRB|=1<<5;
+	while(1){
+		PORTB^=1<<5;
+		_delay_ms(500);
+	}
+}
+EOF
+
+echo "Patching makefile..."
+sed -i "s/REPLACE_ME_PROCESSOR/$PROC/g" $PROJ/makefile
+sed -i "s/REPLACE_ME_PROJ/$PROJ/g" $PROJ/makefile
+sed -i "s/REPLACE_ME_AVRDUDE_DEVICE/$DUDE_PROC/g" $PROJ/makefile
+read -p "What is the clock frequency (F_CPU) in Hz (remember about UL suffix!): " CLOCK
+sed -i "s/REPLACE_ME_F_CPU/$CLOCK/g" $PROJ/makefile
+
