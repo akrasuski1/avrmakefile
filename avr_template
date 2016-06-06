@@ -4,6 +4,7 @@
 
 # The generic makefile.
 MAKEFILE=~/avr/generic/makefile
+MCUS_DEF=~/avr/generic/avr-mcus.def
 
 echo "Hello! This script will interactively create an AVR project."
 echo ""
@@ -53,9 +54,10 @@ int main(){
 EOF
 
 echo "Patching makefile..."
+INCLUDE=$(cat $MCUS_DEF | grep AVR_MCU | grep \"$PROC\" | cut --fields=4 --delimiter=\")
 sed -i "s/REPLACE_ME_PROCESSOR/$PROC/g" $PROJ/makefile
 sed -i "s/REPLACE_ME_PROJ/$PROJ/g" $PROJ/makefile
 sed -i "s/REPLACE_ME_AVRDUDE_DEVICE/$DUDE_PROC/g" $PROJ/makefile
 read -p "What is the clock frequency (F_CPU) in Hz (remember about UL suffix!): " CLOCK
 sed -i "s/REPLACE_ME_F_CPU/$CLOCK/g" $PROJ/makefile
-
+sed -i "s/REPLACE_ME_AVRINC/$INCLUDE/g" $PROJ/makefile

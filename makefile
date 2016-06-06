@@ -72,19 +72,19 @@ $(C_OBJECTS): $(OBJ)/%.o: $(SRC)/%.c
 	$(TOOLCHAIN)-gcc -c $< $(C_FLAGS) -o $@
 	@echo
 flags_c:
-	@echo $(C_FLAGS)
+	@echo $(C_FLAGS) -DREPLACE_ME_AVRINC
 $(CPP_OBJECTS): $(OBJ)/%.o: $(SRC)/%.cpp
 	@echo "Compiling $<"
 	$(TOOLCHAIN)-g++ -c $< $(CPP_FLAGS) -o $@
 	@echo
 flags_cpp:
-	@echo $(CPP_FLAGS)
+	@echo $(CPP_FLAGS) -DREPLACE_ME_AVRINC
 $(S_OBJECTS): $(OBJ)/%.o: $(SRC)/%.S
 	@echo "Compiling $<"
 	$(TOOLCHAIN)-gcc -c $< $(S_FLAGS) -o $@
 	@echo
 flags_S:
-	@echo $(S_FLAGS)
+	@echo $(S_FLAGS) -DREPLACE_ME_AVRINC
 
 directories:
 	@mkdir -p $(OBJ_DIRS)
