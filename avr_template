@@ -3,8 +3,9 @@
 # Config variables:
 
 # The generic makefile.
-MAKEFILE=~/avr/generic/makefile
-MCUS_DEF=~/avr/generic/avr-mcus.def
+THIS_DIR=$(dirname "$(readlink -f "$0")")
+MAKEFILE=$THIS_DIR/makefile
+MCUS_DEF=$THIS_DIR/avr-mcus.def
 
 echo "Hello! This script will interactively create an AVR project."
 echo ""
